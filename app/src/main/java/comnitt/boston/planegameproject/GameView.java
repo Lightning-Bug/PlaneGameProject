@@ -1,6 +1,7 @@
 package comnitt.boston.planegameproject;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -23,38 +24,51 @@ public class GameView extends SurfaceView implements Runnable {
     private Paint paint;
     private Canvas canvas;
     private SurfaceHolder surfaceHolder;
-    //enemies object array
-    private Enemy[] enemies;
+    private Enemy enemies;
+    private Friend friend;
+    private Boom boom;                    //blast
+    //the score holder
+    int score;
+    int highScore[] = new int[4];                     //the high Scores Holder
+    SharedPreferences sharedPreferences;              //Shared Prefernces to store the High Scores
+    //private int enemyCount = 3;
+    private ArrayList<Star> stars = new ArrayList<Star>();
+    int screenX;
+    int countMisses;
+    boolean flag ;
+    private boolean isGameOver ;
 
-
-    private Boom boom;                          //blast
-    private int enemyCount = 3;
-
-    private ArrayList<Star> stars = new
-            ArrayList<Star>();
-
-
-
-    public GameView(Context context, int screenX, int screenY) {
+    public GameView(Context context, int screenX, int screenY)
+    {
         super(context);
 
         player = new Player(context, screenX, screenY);
         surfaceHolder = getHolder();
         paint = new Paint();
 
-        //adding 100 stars ,Any number
-        int starNums = 100;
+        int starNums = 100;                           //adding 100 stars
         for (int i = 0; i < starNums; i++) {
             Star s  = new Star(screenX, screenY);
             stars.add(s);
         }
-
-        enemies = new Enemy[enemyCount];
-        for(int i=0; i<enemyCount; i++){
-            enemies[i] = new Enemy(context, screenX, screenY);
-        }
-
+        // 3enemies = new Enemy[enemyCount];
+        //for(int i=0; i<enemyCount; i++){
+           // enemies[i] = new Enemy(context, screenX, screenY);
+       // }
+        this.screenX = screenX;
+        countMisses = 0;
+        isGameOver = false;
+        enemies = new Enemy(context, screenX, screenY);
         boom= new Boom(context);
+        friend = new Friend(context, screenX, screenY);
+
+        score = 0;
+        sharedPreferences = context.getSharedPreferences("SHAR_PREF_NAME",Context.MODE_PRIVATE);
+        //initially all zero
+        highScore[0] = sharedPreferences.getInt("score1",0);
+        highScore[1] = sharedPreferences.getInt("score2",0);
+        highScore[2] = sharedPreferences.getInt("score3",0);
+        highScore[3] = sharedPreferences.getInt("score4",0);
     }
 
     @Override
@@ -69,31 +83,107 @@ public class GameView extends SurfaceView implements Runnable {
 
     private void update()
     {
+        score++;
         player.update();
 
         boom.setX(-250);                           //setting boom outside the screen
         boom.setY(-250);
 
-        for (Star s : stars) {
-            s.update(player.getSpeed());
+        for (Star s : stars)
+        {    s.update(player.getSpeed());
         }
 
-        for (int i = 0; i < enemyCount; i++) {
-            enemies[i].update(player.getSpeed());
+        if(enemies.getX()==screenX){
+            flag = true;
+        }
 
-            //if collision occurrs
+        /*for (int i = 0; i < enemyCount; i++)
+        { //if collision occurs
             if (Rect.intersects(player.getDetectCollision(), enemies[i].getDetectCollision())) {
-
                 //displaying boom at that location
                 boom.setX(enemies[i].getX());
                 boom.setY(enemies[i].getY());
 
                 enemies[i].setX(-200);
             }
+            */
+            enemies.update(player.getSpeed());            //if collision happens
+
+            if (Rect.intersects(player.getDetectCollision(), enemies.getDetectCollision()))  //detecting boom
+            {
+            boom.setX(enemies.getX());
+            boom.setY(enemies.getY());
+            enemies.setX(-200);  //playing sound
+            }
+
+            else{
+                //if the enemy has just entered
+                if(flag){
+                    //if player's x cd > enemies x cd , enemy has passed across the player
+                    if(player.getDetectCollision().exactCenterX() >= enemies.getDetectCollision().exactCenterX())
+                    {
+                        countMisses++;
+                        flag = false;         //flag false so that the else part is executed only when new enemy enters the screen
+                        if(countMisses==10)     // misses>5,game over
+                        {
+                            //setting playing false to stop the game.
+                            playing = false;
+                            isGameOver = true;
+
+                            for(int i=0;i<4;i++)
+                            {
+                            if(highScore[i]<score)
+                               {
+                                final int finalI = i;
+                                highScore[i] = score;
+                                break;
+                               }
+                            }
+
+                            SharedPreferences.Editor e = sharedPreferences.edit();      //storing the scores through shared Preferences
+                            for(int i=0;i<4;i++){
+                            int j = i+1;
+                            e.putInt("score"+j,highScore[i]);
+                        }
+                            e.apply();
+                        }
+                    }
+                }
+            }
+
+        friend.update(player.getSpeed());   //friends coordinates updated
+
+        if(Rect.intersects(player.getDetectCollision(),friend.getDetectCollision()))   //collision between player and a friend
+        {
+            boom.setX(friend.getX());         //boom at the collision
+            boom.setY(friend.getY());
+            playing = false;                      //playing false to stop the game
+            isGameOver = true;                     //game over
+
+            //Assigning the scores to the highscore integer array
+            for(int i=0;i<4;i++){
+            if(highScore[i]<score)
+            {
+
+                final int finalI = i;
+                highScore[i] = score;
+                break;
+            }
+        }
+            //storing the scores through shared Preferences
+            SharedPreferences.Editor e = sharedPreferences.edit();
+            for(int i=0;i<4;i++){
+            int j = i+1;
+            e.putInt("score"+j,highScore[i]);
+        }
+            e.apply();
         }
     }
 
-    private void draw() {
+
+
+    private void draw()
+    {
         if (surfaceHolder.getSurface().isValid()) {
             canvas = surfaceHolder.lockCanvas();
             canvas.drawColor(Color.BLACK);
@@ -106,31 +196,25 @@ public class GameView extends SurfaceView implements Runnable {
                 canvas.drawPoint(s.getX(), s.getY(), paint);
             }
 
+            //score on screen
+            paint.setTextSize(30);
+            canvas.drawText("Score:"+score,100,50,paint);
+
             canvas.drawBitmap(
                     player.getBitmap(),
                     player.getX(),
                     player.getY(),
                     paint);
 
-            //drawing the enemies
-            for (int i = 0; i < enemyCount; i++) {
-                canvas.drawBitmap(
-                        enemies[i].getBitmap(),
-                        enemies[i].getX(),
-                        enemies[i].getY(),
-                        paint
-                );
-            }
 
             //drawing the enemies
-            for (int i = 0; i < enemyCount; i++) {
-                canvas.drawBitmap(
-                        enemies[i].getBitmap(),
-                        enemies[i].getX(),
-                        enemies[i].getY(),
-                        paint
-                );
-            }
+            canvas.drawBitmap(
+                    enemies.getBitmap(),
+                    enemies.getX(),
+                    enemies.getY(),
+                    paint
+            );
+
             //drawing boom
             canvas.drawBitmap(
                     boom.getBitmap(),
@@ -138,11 +222,33 @@ public class GameView extends SurfaceView implements Runnable {
                     boom.getY(),
                     paint
             );
+
+            //drawing friends image
+            canvas.drawBitmap(
+
+                    friend.getBitmap(),
+                    friend.getX(),
+                    friend.getY(),
+                    paint
+            );
+
+
+            //game is over
+            if(isGameOver)
+            {
+                paint.setColor(Color.RED);
+                paint.setTextSize(140);
+                paint.setTextAlign(Paint.Align.CENTER);
+                int yPos=(int) ((canvas.getHeight() / 2) - ((paint.descent() + paint.ascent()) / 2));
+                canvas.drawText("Game Over",canvas.getWidth()/2,yPos,paint);
+            }
+
             surfaceHolder.unlockCanvasAndPost(canvas);
         }
     }
 
-    private void control() {
+    private void control()
+    {
         try {
             gameThread.sleep(17);
         } catch (InterruptedException e) {
