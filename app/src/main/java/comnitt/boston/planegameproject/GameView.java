@@ -408,7 +408,7 @@ public class GameView extends SurfaceView implements Runnable
             if(friendcoll>=4)
             countcoll.setColor(Color.RED);
             countcoll.setTextSize(60);
-            canvas.drawText("Friend:"+ (6-friendcoll),2100,30,countcoll);
+            canvas.drawText("Friend:"+ (5-friendcoll),2100,30,countcoll);
             canvas.restore();
 
 
