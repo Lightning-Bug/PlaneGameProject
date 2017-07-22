@@ -15,7 +15,8 @@ public class Boom {
     private int x;
     private int y;
 
-    public Boom(Context context) {
+    public Boom(Context context)
+    {
 
         bitmap = BitmapFactory.decodeResource
                 (context.getResources(), R.drawable.boom);

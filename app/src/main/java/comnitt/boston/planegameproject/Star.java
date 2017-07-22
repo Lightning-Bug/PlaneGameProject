@@ -27,7 +27,8 @@ import java.util.Random;
             y = generator.nextInt(maxY);
         }
 
-        public void update(int playerSpeed) {
+        public void update(int playerSpeed)
+        {
             x -= playerSpeed;   //decresing speed with x
             x -= speed;
 
@@ -56,4 +57,6 @@ import java.util.Random;
             return y;
         }
     }
+
+
 

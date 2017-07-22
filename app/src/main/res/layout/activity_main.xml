@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -9,17 +10,76 @@
     <ImageButton
         android:id="@+id/buttonPlay"
         android:background="@drawable/playnow"
-        android:layout_width="250dp"
+        android:layout_width="200dp"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/buttonScore"
-        android:layout_centerHorizontal="true" />
+        android:onClick="onClick"
+        android:layout_alignBottom="@+id/buttonScore"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="36dp" />
 
     <ImageButton
         android:id="@+id/buttonScore"
         android:background="@drawable/highscore"
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
+        android:layout_width="150dp"
+        android:layout_marginBottom="5dp"
+        android:onClick="History"
+        android:layout_height="50dp"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true" />
+
+    <ImageButton
+        android:id="@+id/imageButton2"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="14dp"
+        android:padding="0dp"
+        android:onClick="Gamerules"
+        app:srcCompat="@drawable/howto"
+        android:background="#000000"
+        android:scaleType="fitXY"
+        android:layout_marginLeft="12dp"
+        android:layout_marginStart="12dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/database"
+        android:onClick="highscores"
+        android:text="Data"
+        android:textColor="#e4e6e8"
+        android:textStyle="bold"
+        android:layout_alignTop="@+id/imageButton2"
+        android:layout_toLeftOf="@+id/buttonPlay"
+        android:layout_toStartOf="@+id/buttonPlay" />
+
+    <ImageButton
+        android:id="@+id/sound"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:onClick="soundcontrol"
+        android:scaleType="fitXY"
+        app:srcCompat="@drawable/sound"
+        android:layout_alignTop="@+id/button"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginRight="12dp"
+        android:layout_marginEnd="12dp" />
+
+    <ImageButton
+        android:id="@+id/imageButton"
+        android:layout_width="45dp"
+        android:scaleType="fitXY"
+        android:layout_height="50dp"
+        android:background="#2C4D4E"
+        android:layout_marginTop="20dp"
+        android:onClick="GotomyGit"
+        app:srcCompat="@drawable/mygit"
+        android:layout_below="@+id/imageButton2"
+        android:layout_alignLeft="@+id/imageButton2"
+        android:layout_alignStart="@+id/imageButton2" />
 
 </RelativeLayout>

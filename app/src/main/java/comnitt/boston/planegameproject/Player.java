@@ -55,7 +55,8 @@ public class Player {
 
     public void update() {
 
-        if (boosting) {
+        if (boosting)
+        {
             //speeding up the ship
             speed += 2;
         } else {

@@ -29,7 +29,8 @@ public class Enemy {
     private Rect detectCollision;
 
 
-    public Enemy(Context context, int screenX, int screenY) {
+    public Enemy(Context context, int screenX, int screenY)
+    {
         bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.enemy);
 
         // min and max coordinates
@@ -49,12 +50,13 @@ public class Enemy {
 
     }
 
-    public void update(int playerSpeed) {
+    public void update(int playerSpeed)
+    {
         //enemy will move right to left
         x -= playerSpeed;
         x -= speed;
-        if (x < minX - bitmap.getWidth()) {
-
+        if (x < minX - bitmap.getWidth())
+        {
             Random generator = new Random();                    //right edge
             speed = generator.nextInt(10) + 10;
             x = maxX;
